@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 
 @Entity()
@@ -15,7 +15,16 @@ export class Todo {
   @ManyToOne(() => User, (user) => user.todos, { eager: false })
   @JoinColumn({ name: 'userId' }) // Faz a ligação com a coluna userId
   user: User;
+  
+  @Column({ nullable: true }) // 📅 Data de execução da tarefa
+  dueDate?: Date;
 
-  @Column() // userId como campo direto para facilitar buscas
-  userId: number;
+  @Column({ nullable: true }) // 📂 Categoria da tarefa
+  category?: string;
+
+  @Column({ default: false }) // 🔔 Se a tarefa tem lembrete ativado
+  reminder: boolean;
+
+  @Column({ type: 'text', nullable: true }) // 🔁 Dias da semana armazenados como string ("1,3,5")
+  recurrenceDays?: string; // Exemplo armazenado: "1,3,5"
 }

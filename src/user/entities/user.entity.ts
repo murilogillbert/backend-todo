@@ -18,6 +18,6 @@ export class User {
   @Column({ unique: true })
   phone: string;
 
-  @OneToMany(() => Todo, (todo) => todo.userId)
+  @OneToMany(() => Todo, (todo) => todo.user)
   todos: Todo[];
 }

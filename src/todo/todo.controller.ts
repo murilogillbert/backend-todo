@@ -30,13 +30,19 @@ export class TodoController {
 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(@Param('id') id: number, @Body('completed') completed: boolean) {
-    return this.todoService.update(id, completed);
+  update(
+    @Param('id') id: number, 
+    @Body() updateTodoDto: any,
+    @Req() req
+  ) {
+    return this.todoService.update(id, req.user.userId, updateTodoDto);
   }
+  
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: number) {
-    return this.todoService.remove(id);
+  remove(@Param('id') id: number, @Req() req) {
+    return this.todoService.remove(id, req.user.userId);
   }
+  
 }
