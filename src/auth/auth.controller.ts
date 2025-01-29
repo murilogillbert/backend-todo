@@ -1,7 +1,7 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
 
-@Controller('auth') // Define que todas as rotas dentro deste controller começam com /auth
+@Controller('auth') // Define o prefixo para todas as rotas dentro deste controller
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -14,7 +14,7 @@ export class AuthController {
     return this.authService.login(user);
   }
 
-  @Post('register')
+  @Post('register') // 📌 Adicionando a rota correta para registro de usuários
   async register(
     @Body('name') name: string,
     @Body('email') email: string,
