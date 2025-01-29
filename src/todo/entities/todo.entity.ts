@@ -25,6 +25,8 @@ export class Todo {
   @Column({ default: false }) // 🔔 Se a tarefa tem lembrete ativado
   reminder: boolean;
 
-  @Column({ type: 'text', nullable: true }) // 🔁 Dias da semana armazenados como string ("1,3,5")
-  recurrenceDays?: string; // Exemplo armazenado: "1,3,5"
+  @Column({ type: "text", nullable: true, default: "" }) 
+  recurrenceDays?: string;  
 }
+
+
