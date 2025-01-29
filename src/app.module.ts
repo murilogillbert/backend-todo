@@ -9,14 +9,17 @@ import { AuthModule } from './auth/auth.module';
   imports: [
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.PGHOST || 'localhost',
-      port: parseInt(process.env.PGPORT || '5432', 10),
-      username: process.env.PGUSER || 'postgres',
-      password: process.env.PGPASSWORD || 'password',
-      database: process.env.PGDATABASE || 'database',
-      autoLoadEntities: true,
-      synchronize: true,
+      type: 'postgres', // Tipo do banco de dados
+      host: 'junction.proxy.rlwy.net', // Host público do banco
+      port: 45544, // Porta pública fornecida
+      username: 'postgres', // Usuário do banco
+      password: 'HfwGnlZPmAwaeVEuZfFQHIGfkWFnttAj', // Senha fornecida
+      database: 'railway', // Nome do banco de dados
+      autoLoadEntities: true, // Carrega automaticamente as entidades
+      synchronize: true, // Apenas para desenvolvimento (gera tabelas automaticamente)
+      ssl: {
+        rejectUnauthorized: false, // Importante para conexões externas seguras (SSL)
+      },
     }),
     TodoModule,
     UserModule,
