@@ -4,11 +4,11 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Configurar CORS para permitir apenas requisições do frontend hospedado
+  // Configurar CORS para aceitar requisições do frontend
   app.enableCors({
-    origin: 'https://frontend-wheat-phi-56.vercel.app', // URL do frontend
+    origin: 'https://frontend-wheat-phi-56.vercel.app', // URL do frontend hospedado no Vercel
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
+    credentials: true, // Permite cookies, se necessário
   });
 
   await app.listen(process.env.PORT || 3001);
