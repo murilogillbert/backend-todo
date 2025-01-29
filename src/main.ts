@@ -6,10 +6,7 @@ async function bootstrap() {
 
   // Corrigindo CORS para permitir todas as origens ou apenas o frontend no Vercel
   app.enableCors({
-    origin: [
-      'https://frontend-wheat-phi-56.vercel.app',
-      'https://frontend-git-main-murilogillberts-projects.vercel.app',
-      'https://frontend-ejrfsp5lj-murilogillberts-projects.vercel.app',
+    origin: ['*'
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type, Authorization',
