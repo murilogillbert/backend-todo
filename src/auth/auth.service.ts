@@ -51,19 +51,12 @@ export class AuthService {
         throw new BadRequestException('Email já cadastrado.');
     }
 
-    // 🔥 Criar um salt aleatório e hashear a senha
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    console.log("Senha antes de salvar no BD:", password); // DEBUG
 
-    console.log("Senha antes do hash:", password); // DEBUG
-    console.log("Senha após hash:", hashedPassword); // DEBUG
+    // 🔥 Agora passamos a senha SEM hash para o `userService.register()`
+    const newUser = await this.userService.register(name, email, password, phone);
 
-    // Criar usuário no banco de dados
-    const newUser = await this.userService.register(name, email, hashedPassword, phone);
-
-    // Verifique se a senha foi salva corretamente
     console.log("Usuário criado:", newUser);
-
     return newUser;
 }
 
