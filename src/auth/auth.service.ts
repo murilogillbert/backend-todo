@@ -45,10 +45,12 @@ export class AuthService {
       throw new BadRequestException('Email já cadastrado.');
     }
 
-    // Criptografar a senha
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // 🔥 Garanta que a senha está sendo hashada corretamente
+    const salt = await bcrypt.genSalt(10); // Gera um salt aleatório
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     // Chamando o método register corretamente com os 4 argumentos
     return this.userService.register(name, email, hashedPassword, phone);
-  }
+}
+
 }
