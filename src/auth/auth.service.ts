@@ -14,15 +14,22 @@ export class AuthService {
   async validateUser(identifier: string, password: string) {
     const user = await this.userService.findByEmailOrName(identifier);
 
-    // 🔥 Verifique se a senha realmente existe e está correta
     if (!user || !user.password) {
-      throw new UnauthorizedException('Credenciais inválidas.');
+        throw new UnauthorizedException('Credenciais inválidas.');
     }
 
+    console.log("Senha digitada:", password); // DEBUG
+    console.log("Senha armazenada no BD:", user.password); // DEBUG
+
+    // Comparação segura com bcrypt
     const isPasswordValid = await bcrypt.compare(password, user.password);
+
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Credenciais inválidas.');
+        console.log("Senha incorreta!"); // DEBUG
+        throw new UnauthorizedException('Credenciais inválidas.');
     }
+
+    console.log("Senha correta! Login autorizado."); // DEBUG
 
     return user;
 }
@@ -35,22 +42,29 @@ export class AuthService {
     };
   }
 
-  // 🚀 Cadastro de usuário corrigido
   async register(userData: { name: string; email: string; password: string; phone: string }) {
     const { name, email, password, phone } = userData;
 
     // Verificar se o usuário já existe
     const existingUser = await this.userService.findByEmailOrName(email);
     if (existingUser) {
-      throw new BadRequestException('Email já cadastrado.');
+        throw new BadRequestException('Email já cadastrado.');
     }
 
-    // 🔥 Garanta que a senha está sendo hashada corretamente
-    const salt = await bcrypt.genSalt(10); // Gera um salt aleatório
-    const hashedPassword = await bcrypt.hash(password, salt);
+    // 🔥 Criar um salt aleatório e hashear a senha
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // Chamando o método register corretamente com os 4 argumentos
-    return this.userService.register(name, email, hashedPassword, phone);
+    console.log("Senha antes do hash:", password); // DEBUG
+    console.log("Senha após hash:", hashedPassword); // DEBUG
+
+    // Criar usuário no banco de dados
+    const newUser = await this.userService.register(name, email, hashedPassword, phone);
+
+    // Verifique se a senha foi salva corretamente
+    console.log("Usuário criado:", newUser);
+
+    return newUser;
 }
 
 }
