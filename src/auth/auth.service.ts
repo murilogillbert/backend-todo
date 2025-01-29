@@ -13,11 +13,19 @@ export class AuthService {
   // Valida as credenciais do usuário
   async validateUser(identifier: string, password: string) {
     const user = await this.userService.findByEmailOrName(identifier);
-    if (user && (await bcrypt.compare(password, user.password))) {
-      return user;
+
+    // 🔥 Verifique se a senha realmente existe e está correta
+    if (!user || !user.password) {
+      throw new UnauthorizedException('Credenciais inválidas.');
     }
-    throw new UnauthorizedException('Credenciais inválidas.');
-  }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Credenciais inválidas.');
+    }
+
+    return user;
+}
 
   // Gera o token JWT após o login
   async login(user: any) {
