@@ -26,28 +26,26 @@ export class TodoService {
   // 🟢 Criar uma nova tarefa
   async create(userId: number, createTodoDto) {
     const { title, dueDate, category, reminder, recurrenceDays } = createTodoDto;
-
+  
     if (!title) {
-      throw new BadRequestException('O título da tarefa é obrigatório.');
+      throw new BadRequestException("O título da tarefa é obrigatório.");
     }
-
-    // 🔥 Validando recurrenceDays antes de salvar
-    let recurrenceString: string | undefined = undefined;
-    if (recurrenceDays && Array.isArray(recurrenceDays)) {
-      recurrenceString = recurrenceDays.join(',');
-    }
-
+  
+    // ✅ Certifique-se de que `recurrenceDays` seja uma string antes de salvar
+    const recurrenceString = Array.isArray(recurrenceDays) ? recurrenceDays.join(",") : "";
+  
     const newTodo = this.todoRepository.create({
       title,
       user: { id: userId },
       dueDate,
       category,
       reminder,
-      recurrenceDays: recurrenceString, // 🔄 Agora tratado corretamente
+      recurrenceDays: recurrenceString,
     });
-
+  
     return this.todoRepository.save(newTodo);
   }
+  
 
   // 🟢 Atualizar uma tarefa
   async update(id: number, userId: number, updateTodoDto) {
