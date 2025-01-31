@@ -31,12 +31,15 @@ async create(userId: number, createTodoDto) {
     throw new BadRequestException("O título da tarefa é obrigatório.");
   }
 
-  console.log("🟢 Dados recebidos no backend:", createTodoDto); // ✅ LOG 1: Verificar os dados que chegam ao backend
+  console.log("🟢 Dados recebidos no backend:", createTodoDto); // ✅ LOG 1
 
   // ✅ Certifique-se de que `recurrenceDays` seja sempre uma string antes de salvar
-  const recurrenceString = Array.isArray(recurrenceDays) ? recurrenceDays.join(",") : "";
+  let recurrenceString = "";
+  if (Array.isArray(recurrenceDays)) {
+    recurrenceString = recurrenceDays.length > 0 ? recurrenceDays.join(",") : "";
+  }
 
-  console.log("🟢 recurrenceDays convertido para string:", recurrenceString); // ✅ LOG 2: Verificar como será salvo
+  console.log("🟢 recurrenceDays convertido para string:", recurrenceString); // ✅ LOG 2
 
   const newTodo = this.todoRepository.create({
     title,
@@ -47,10 +50,13 @@ async create(userId: number, createTodoDto) {
     recurrenceDays: recurrenceString,
   });
 
-  return this.todoRepository.save(newTodo);
-}
-
-  
+  try {
+    return await this.todoRepository.save(newTodo);
+  } catch (error) {
+    console.error("❌ Erro ao salvar a tarefa:", error); // ✅ LOG 3
+    throw new Error("Erro ao salvar a tarefa no banco de dados.");
+  }
+}  
 
 // 🟢 Atualizar uma tarefa
 async update(id: number, userId: number, updateTodoDto) {
@@ -62,22 +68,28 @@ async update(id: number, userId: number, updateTodoDto) {
     throw new NotFoundException(`Tarefa com ID ${id} não encontrada ou não pertence a você.`);
   }
 
-  console.log("🟢 Dados recebidos para atualização:", updateTodoDto); // ✅ LOG 3: Verificar os dados que chegam para atualizar
+  console.log("🟢 Dados recebidos para atualização:", updateTodoDto); // ✅ LOG 4
 
   // 🔥 Convertendo recurrenceDays para string antes de atualizar
-  if (updateTodoDto.recurrenceDays) {
+  if (updateTodoDto.recurrenceDays && Array.isArray(updateTodoDto.recurrenceDays)) {
     updateTodoDto.recurrenceDays = updateTodoDto.recurrenceDays.join(",");
+  } else {
+    updateTodoDto.recurrenceDays = "";
   }
 
-  console.log("🟢 recurrenceDays após conversão:", updateTodoDto.recurrenceDays); // ✅ LOG 4: Verificar se a conversão ocorreu corretamente
+  console.log("🟢 recurrenceDays após conversão:", updateTodoDto.recurrenceDays); // ✅ LOG 5
 
-  await this.todoRepository.update(id, updateTodoDto);
-  return this.todoRepository.findOne({ where: { id } });
+  try {
+    await this.todoRepository.update(id, updateTodoDto);
+    return await this.todoRepository.findOne({ where: { id } });
+  } catch (error) {
+    console.error("❌ Erro ao atualizar a tarefa:", error); // ✅ LOG 6
+    throw new Error("Erro ao atualizar a tarefa no banco de dados.");
+  }
 }
 
-
   // 🟢 Remover uma tarefa
-  async remove(id: number, userId: number) {
+async remove(id: number, userId: number) {
     const todo = await this.todoRepository.findOne({
       where: { id, user: { id: userId } },
     });
